@@ -3,10 +3,12 @@ package ge.ibsu.demo.controllers;
 import ge.ibsu.demo.dto.AddCustomerDTO;
 import ge.ibsu.demo.entity.Customer;
 import ge.ibsu.demo.service.CustomerService;
+import ge.ibsu.demo.util.GeneralUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -30,13 +32,15 @@ public class CustomerController {
 
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = {"application/json"})
-    public Customer addCustomer(@RequestBody AddCustomerDTO rd) {
+    public Customer addCustomer(@RequestBody AddCustomerDTO rd) throws Exception {
+        GeneralUtil.checkRequiredProperties(rd, Arrays.asList("firstName", "lastName", "address"));
         return customerService.addCustomer(rd);
     }
 
     @ResponseBody
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = {"application/json"})
     public Customer editCustomer(@PathVariable Long id, @RequestBody AddCustomerDTO addCustomerDTO) throws Exception {
+        GeneralUtil.checkRequiredProperties(addCustomerDTO, Arrays.asList("firstName", "lastName", "address"));
         return customerService.editCustomer(id, addCustomerDTO);
     }
 }
