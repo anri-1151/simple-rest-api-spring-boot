@@ -1,12 +1,15 @@
 package ge.ibsu.demo.service;
 
 import ge.ibsu.demo.dto.AddCustomerDTO;
+import ge.ibsu.demo.dto.Paging;
+import ge.ibsu.demo.dto.SearchCustomer;
 import ge.ibsu.demo.entity.Address;
 import ge.ibsu.demo.entity.Customer;
 import ge.ibsu.demo.repository.AddressRepository;
 import ge.ibsu.demo.repository.CustomerRepository;
 import ge.ibsu.demo.util.GeneralUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +56,15 @@ public class CustomerService {
         GeneralUtil.getCopyOf(addCustomerDTO, customer);
         customer.getAddress().setAddress(addCustomerDTO.getAddress());
         return customerRepository.save(customer);
+    }
+
+    public Slice<Customer> search(SearchCustomer searchCustomer, Paging paging) {
+        String searchText = null;
+        if (searchCustomer.getSearchText() != null && !searchCustomer.getSearchText().equals("")) {
+            searchText = "%" + searchCustomer.getSearchText() + "%";
+        }
+        Pageable pageable = PageRequest.of(paging.getPage() - 1, paging.getSize(), Sort.by("createDate").ascending());
+        return customerRepository.search(1, searchText, pageable);
     }
 
 }
